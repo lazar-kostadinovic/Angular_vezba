@@ -1,17 +1,22 @@
 import { Component, Input } from '@angular/core';
 import { DUMMY_USERS } from '../dummy-users';
 import { TaskComponent } from "./task/task.component";
+import { NewTaskComponent } from "./new-task/new-task.component";
+import { NewTaskData, Task } from './task/task.model';
+import { CardComponent } from "../shared/card/card.component";
 
 @Component({
   selector: 'app-tasks',
   standalone: true,
-  imports: [TaskComponent],
+  imports: [TaskComponent, NewTaskComponent, CardComponent],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.css'
 })
 export class TasksComponent {
+
   @Input({required:true}) id!:string;
   @Input({required:true}) name!:string | undefined;
+  isAddingTaks=false;
    dummyTasks = [
     {
       id: 't1',
@@ -40,6 +45,31 @@ export class TasksComponent {
 
   get selectedUserTasks(){
     return this.dummyTasks.filter((task)=> task.userId === this.id)
+  }
+
+  onCompleteTask(id:string) {
+    this.dummyTasks = this.dummyTasks.filter((task)=> task.id!==id);
+  }
+
+  onStartAddTask(){
+    this.isAddingTaks=true;
+    this.dummyTasks.push();
+  }
+
+  onCloseButton(){
+    this.isAddingTaks=false;
+  }
+
+  onSubmit(taskData: NewTaskData){
+    let id='u4';
+    this.dummyTasks.unshift({
+      id: new Date().getTime().toString(),
+      userId: this.id,
+      title: taskData.title,
+      summary: taskData.summary,
+      dueDate: taskData.dueDate
+    });
+    this.isAddingTaks=false;
   }
 
 }
